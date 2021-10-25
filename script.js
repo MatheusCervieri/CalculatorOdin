@@ -1,149 +1,163 @@
-let displaystr = "";
+
+
 const display = document.querySelector(".display");
-let firstnumber = 0;
-let secondnumber = 0;
-let operator;
-let result = 0;
-let waitingforsecondoperand = false;
+const calculator = {
+    displayValue: '0',
+    firstOperand: null,
+    waitingForSecondOperand: false,
+    operator: null,
+};
 
-function add (a,b){
-    return parseInt(a)+parseInt(b);
-}
-function sub (a,b){
-    return a-b;
-}
-function mult(a,b){
-    return a*b;
-}
-function divi(a,b){
-    return a/b;
-}
-function operate(x, y, op) {
-    if(op === 'sum') {
-        console.log("sum");
-        return add(x,y);
-    } else if(op === '-') {
-        return sub(x,y);
-    } else if(op === '*') {
-        return mult(x,y);
-    } else if(op === '/') {
-        if(y === 0) {
-        return 'It is impossible';
-        } else {
-        return divi(x,y);
-        }
-    }
-}
+function updateDisplay (){
+    let displayValuearray = calculator.displayValue.split('');
 
-function makeDisplay (buttonid){
-    if (waitingforsecondoperand == false){
-        displaystr = displaystr + buttonid;
-        }
-        else {
-        displaystr = "";
-        displaystr = displaystr + buttonid;
-        }
-    
-}
-
-
-function buttonAction(buttonid){
-    if(buttonid == 0){
-        makeDisplay(buttonid);
+    if(displayValuearray.length <= 11){
+        display.textContent = calculator.displayValue;
     }
-    if(buttonid == 1){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 2){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 3){
-        makeDisplay(buttonid);
-    if(buttonid == 4){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 5){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 6){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 7){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 8){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == 9){
-        makeDisplay(buttonid);
-    }
-    if(buttonid == "sum"){
-        if (waitingforsecondoperand == false){
-        firstnumber = displaystr;
-        displaystr = result;
-        operator = "sum";
-        waitingforsecondoperand = true;
-        }
-        else {
-            secondnumber = displaystr;
-            displaystr = "";
-            operator = "sum";
-            result = operate(firstnumber,secondnumber,operator);
-            displaystr = result;
-            firstnumber = result;
-            waitingforsecondoperand = false;
-
-        }
-    }
-    if(buttonid == "divi"){
-        firstnumber = displaystr;
-        displaystr = "";
-        operator = "/";
-    }
-    if(buttonid == "-"){
-        firstnumber = displaystr;
-        displaystr = "";
-        operator = "-";
-    }
-    if(buttonid == "mult"){
-        firstnumber = displaystr;
+    else {
+        displayValuearray.pop();
+        displayValuearray.pop();
+        displayValuearray.push(".");
+        display.textContent = displayValuearray.join("");
+        calculator.displayValue = displayValuearray.join("");
+        displayValuearray = [];
+       // display.textContent = displayValuearray.join();
         
-        operator = "*";
+    }
+
+    //converter o displayvalue para uma string.
+    //checar se o tamanho da string é menor que 11>= se for executa normalmente. display.textContent = calculator.displayValue;
+    // se não: remove os dois últimos valores da string e adiciona "."
+    
+}
+
+function inputDigit (digit){
+    if(calculator.waitingForSecondOperand == true){
+        calculator.displayValue = digit;
+        calculator.waitingForSecondOperand = false;
+    }
+    else {
+        if(calculator.displayValue == "0"){
+            calculator.displayValue = digit;
+        }
+        else {
+            calculator.displayValue = calculator.displayValue + digit;
+        }
     }
     
-    if(buttonid == "equal"){
-        secondnumber = displaystr;
-        result = operate(firstnumber,secondnumber,operator);
-        displaystr = result;
-        firstnumber = displaystr;
-    }
-    if(buttonid == "ac"){
-        firstnumber = 0;
-        secondnumber = 0;
-        displaystr = "0";
-        waitingforsecondoperand = false;
-    }
-    console.log("..................................................." );
-    console.log("First number: " + firstnumber);
-    console.log("Second Number: " + secondnumber);
-    console.log("DisplayString (DIsplayvalou): " + displaystr);
-    console.log("Waitingforsecondoperand: " + waitingforsecondoperand);
-    console.log("Result " + result);
-    console.log("Operator " + operator);
-    console.log("..................................................." );
-    display.textContent = displaystr;
+    
 }
+
+function handleOperator (operatora){
+    const firstnumber = parseFloat(calculator.displayValue);
+    
+
+    if (calculator.operator && calculator.waitingForSecondOperand)  {
+        calculator.operator = operatora;
+        console.log(calculator);
+        return;
+      }
+    if(calculator.firstOperand === null && !isNaN(firstnumber)){
+        calculator.firstOperand = firstnumber;
+    }
+    else if (calculator.operator)
+    {
+
+        const result = calculate(calculator.firstOperand, firstnumber, calculator.operator);
+        calculator.displayValue = `${parseFloat(result.toFixed(7))}`;
+        calculator.firstOperand = result;
+        
+        
+    }
+   
+  
+
+    calculator.waitingForSecondOperand = true;
+    calculator.operator = operatora;
+    
+
+}
+
+function inputDecimal (dot){
+    if (calculator.waitingForSecondOperand === true) {
+        calculator.displayValue = '0.'
+      calculator.waitingForSecondOperand = false;
+      return
+    }
+  
+    if (!calculator.displayValue.includes(dot)) {
+        calculator.displayValue += dot;
+      }
+}
+
+function calculate (firstOperand, secondOperand, Operator){
+
+if(Operator == "sum"){
+    return firstOperand + secondOperand;
+}
+if(Operator== "divi"){
+    if(secondOperand != 0){
+    return firstOperand/secondOperand;
+    }
+    else{
+        console.log("error");
+    return 'error';
+    }
+}
+if(Operator == "-"){
+    return firstOperand - secondOperand;
+}
+if(Operator == "mult"){
+    return firstOperand*secondOperand;
+}
+if(Operator == "equal"){
+    
+}
+if(Operator == "percent"){
+    return 
+}
+
+return secondOperand;
+
+
+}
+
+function resetCalculator() {
+    calculator.displayValue = '0';
+    calculator.firstOperand = null;
+    calculator.waitingForSecondOperand = false;
+    calculator.operator = null;
+   
+  }
+
+updateDisplay();
+
 const buttons = document.querySelectorAll('button');
 
 buttons.forEach((button) => {
 
   button.addEventListener('click', () => {
-    buttonAction(button.id);
+    
+    if (button.className == "number"){
+    inputDigit(button.id);
+    updateDisplay();
+    }
+    if(button.className == "dot"){
+    inputDecimal(button.id);
+    updateDisplay();
+    }
+    if(button.className == "operator"){
+    handleOperator(button.id);
+    updateDisplay();
+    }
+    if(button.className == "equal"){
+    handleOperator(button.id);
+    updateDisplay();
+    }
+    if(button.className == "ac"){
+    resetCalculator();
+    updateDisplay();
+    }
   });
 });
-}
-
-
-
-//problen: quando somar ele precisa somar o primeiro número com o segundo 
 

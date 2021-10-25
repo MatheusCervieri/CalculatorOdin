@@ -1,3 +1,32 @@
+.calculator{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+   
+}
 .keys{
     display: flex;
+    flex-basis: 100%;
+}
+.display{
+    height: 70px;
+    width: 274px;
+    font-size: 50px;
+    
+    border-color: blue;
+    border-style: solid;
+    
+}
+button{
+   height: 70px;
+   width: 70px;
+}
+.equal{
+    width: 140px;
+    background-color: blue;
+}
+.ac{
+    width: 210px;
+    background-color: red;
 }
